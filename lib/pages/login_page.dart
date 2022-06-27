@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:my_app/utils/helperfunctions.dart';
 import 'package:walletconnect_dart/walletconnect_dart.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -22,7 +23,7 @@ class _LoginPageState extends State<LoginPage> {
             'https://files.gitbook.com/v0/b/gitbook-legacy-files/o/spaces%2F-LJJeCjcLrr53DcT1Ml7%2Favatar.png?alt=media'
           ]));
 
-  var _session, _uri;
+  var _session, _uri, _signature;
 
   loginUsingMetamask(BuildContext context) async {
     if (!connector.connected) {
@@ -37,6 +38,28 @@ class _LoginPageState extends State<LoginPage> {
           _session = session;
         });
       } catch (exp) {
+        print(exp);
+      }
+    }
+  }
+
+  signMessageWithMetamask(BuildContext context, String message) async {
+    if (connector.connected) {
+      try {
+        print("Message received");
+        print(message);
+
+        EthereumWalletConnectProvider provider =
+            EthereumWalletConnectProvider(connector);
+        launchUrlString(_uri, mode: LaunchMode.externalApplication);
+        var signature = await provider.personalSign(
+            message: message, address: _session.accounts[0], password: "");
+        print(signature);
+        setState(() {
+          _signature = signature;
+        });
+      } catch (exp) {
+        print("Error while signing transaction");
         print(exp);
       }
     }
@@ -140,17 +163,46 @@ class _LoginPageState extends State<LoginPage> {
                                   )
                                 ],
                               )
-                            : Container(
-                                alignment: Alignment.center,
-                                child: SliderButton(
-                                  action: () async {
-                                    // TODO: Navigate to main page
-                                  },
-                                  label: const Text('Slide to login'),
-                                  icon: const Icon(Icons.check),
-                                  // buttonColor: Colors.black,
-                                ),
-                              )
+                            : (_signature == null)
+                                ? Container(
+                                    alignment: Alignment.center,
+                                    child: ElevatedButton(
+                                        onPressed: () =>
+                                            signMessageWithMetamask(
+                                                context,
+                                                generateSessionMessage(
+                                                    _session.accounts[0])),
+                                        child: const Text('Sign Message')),
+                                  )
+                                : Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    children: [
+                                      Row(
+                                        children: [
+                                          Text(
+                                            "Signature: ",
+                                            style: GoogleFonts.merriweather(
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 16),
+                                          ),
+                                          Text(
+                                              truncateString(
+                                                  _signature.toString(), 4, 2),
+                                              style: GoogleFonts.inconsolata(
+                                                  fontSize: 16))
+                                        ],
+                                      ),
+                                      const SizedBox(height: 20),
+                                      SliderButton(
+                                        action: () async {
+                                          // TODO: Navigate to main page
+                                        },
+                                        label: const Text('Slide to login'),
+                                        icon: const Icon(Icons.check),
+                                      )
+                                    ],
+                                  )
                       ],
                     ))
                 : ElevatedButton(
