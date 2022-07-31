@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:my_app/pages/second_page.dart';
 import 'package:my_app/utils/routes.dart';
 import 'package:my_app/pages/login_page.dart';
 
@@ -15,6 +16,7 @@ class MyApp extends StatelessWidget {
       initialRoute: MyRoutes.loginRoute,
       routes: {
         MyRoutes.loginRoute: (context) => const LoginPage(),
+        MyRoutes.secondPage:(context) => const SecondPage()
       },
     );
   }

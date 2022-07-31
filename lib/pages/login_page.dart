@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:my_app/pages/second_page.dart';
 import 'package:my_app/utils/helperfunctions.dart';
+import 'package:my_app/utils/routes.dart';
 import 'package:walletconnect_dart/walletconnect_dart.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -32,8 +34,6 @@ class _LoginPageState extends State<LoginPage> {
           _uri = uri;
           await launchUrlString(uri, mode: LaunchMode.externalApplication);
         });
-        print(session.accounts[0]);
-        print(session.chainId);
         setState(() {
           _session = session;
         });
@@ -46,15 +46,11 @@ class _LoginPageState extends State<LoginPage> {
   signMessageWithMetamask(BuildContext context, String message) async {
     if (connector.connected) {
       try {
-        print("Message received");
-        print(message);
-
         EthereumWalletConnectProvider provider =
             EthereumWalletConnectProvider(connector);
         launchUrlString(_uri, mode: LaunchMode.externalApplication);
         var signature = await provider.personalSign(
             message: message, address: _session.accounts[0], password: "");
-        print(signature);
         setState(() {
           _signature = signature;
         });
@@ -117,7 +113,7 @@ class _LoginPageState extends State<LoginPage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Image.asset(
-              'assets/images/main_page_image.png',
+              'assets/images/polygon.png',
               fit: BoxFit.fitHeight,
             ),
             (_session != null)
@@ -195,8 +191,9 @@ class _LoginPageState extends State<LoginPage> {
                                       ),
                                       const SizedBox(height: 20),
                                       SliderButton(
-                                        action: () async {
-                                          // TODO: Navigate to main page
+                                        action: () {
+                                          Navigator.pushNamed(
+                                              context, MyRoutes.secondPage);
                                         },
                                         label: const Text('Slide to login'),
                                         icon: const Icon(Icons.check),

@@ -39,6 +39,8 @@ dependencies:
   google_fonts: ^3.0.1
   slider_button: ^2.0.0
   web3dart: ^2.3.5
+  qr_flutter: ^4.0.0
+  qr_code_scanner: ^1.0.0
 
 dev_dependencies:
   flutter_test:
