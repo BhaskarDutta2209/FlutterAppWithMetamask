@@ -95,8 +95,6 @@ class _LoginPageState extends State<LoginPage> {
         'session_update',
         (payload) => setState(() {
               _session = payload;
-              print(_session.accounts[0]);
-              print(_session.chainId);
             }));
     connector.on(
         'disconnect',
@@ -192,8 +190,12 @@ class _LoginPageState extends State<LoginPage> {
                                       const SizedBox(height: 20),
                                       SliderButton(
                                         action: () {
-                                          Navigator.pushNamed(
-                                              context, MyRoutes.secondPage);
+                                          Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                  builder: (_) => SecondPage(
+                                                      session: _session,
+                                                      uri: _uri)));
                                         },
                                         label: const Text('Slide to login'),
                                         icon: const Icon(Icons.check),

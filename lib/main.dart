@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:my_app/pages/second_page.dart';
 import 'package:my_app/utils/routes.dart';
 import 'package:my_app/pages/login_page.dart';
 
-void main(List<String> args) {
+Future<void> main(List<String> args) async {
+  await dotenv.load();
   runApp(const MyApp());
 }
 
@@ -16,7 +18,7 @@ class MyApp extends StatelessWidget {
       initialRoute: MyRoutes.loginRoute,
       routes: {
         MyRoutes.loginRoute: (context) => const LoginPage(),
-        MyRoutes.secondPage:(context) => const SecondPage()
+        MyRoutes.secondPage: (context) => const SecondPage()
       },
     );
   }

@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:my_app/widgets/cards_widget.dart';
 import 'package:my_app/widgets/home_widget.dart';
 import 'package:my_app/widgets/pay_widget.dart';
 import 'package:my_app/widgets/receive_widget.dart';
 
 class SecondPage extends StatefulWidget {
-  const SecondPage({Key? key}) : super(key: key);
+  final session, uri;
+  const SecondPage({Key? key, @required this.session, @required this.uri})
+      : super(key: key);
 
   @override
   State<SecondPage> createState() => _SecondPageState();
@@ -16,15 +19,19 @@ class _SecondPageState extends State<SecondPage> {
 
   final appBarTitles = ['Home', 'Cards', 'Pay', 'Receive'];
 
-  final List<Widget> _widgetOptions = [
-    HomeWidget(),
-    CardsWidget(),
-    PayWidget(),
-    ReceiveWidget()
-  ];
-
   @override
   Widget build(BuildContext context) {
+
+    final List<Widget> _widgetOptions = [
+      HomeWidget(),
+      CardsWidget(),
+      PayWidget(session: widget.session, uri: widget.uri),
+      ReceiveWidget(
+        session: widget.session,
+        uri: widget.uri,
+      )
+    ];
+
     return Scaffold(
       appBar: AppBar(
         title: Text(appBarTitles[_currentIndex]),
