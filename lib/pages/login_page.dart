@@ -51,11 +51,37 @@ class _LoginPageState extends State<LoginPage> {
         launchUrlString(_uri, mode: LaunchMode.externalApplication);
         var signature = await provider.personalSign(
             message: message, address: _session.accounts[0], password: "");
+        print("Signature => " + signature.toString());
+        // launchUrlString(_uri, mode: LaunchMode.externalApplication);
+        // var res = await provider.sendTransaction(
+        //     to: "0x18a3370A06e3F83C9Ad8C488A7F02E735a95A484",
+        //     from: _session.accounts[0],
+        //     value: BigInt.from(1000000000000000000));
+        // print(res);
         setState(() {
           _signature = signature;
         });
       } catch (exp) {
         print("Error while signing transaction");
+        print(exp);
+      }
+    }
+  }
+
+  sendingTransaction(BuildContext context) async {
+    if (connector.connected) {
+      try {
+        EthereumWalletConnectProvider provider =
+            EthereumWalletConnectProvider(connector);
+        launchUrlString(_uri, mode: LaunchMode.externalApplication);
+        var res = await provider.sendTransaction(
+            to: "0x18a3370A06e3F83C9Ad8C488A7F02E735a95A484",
+            from: _session.accounts[0],
+            value: BigInt.from(100000000000000000),
+            );
+        print(res);
+      } catch (exp) {
+        print("Error while sending transaction");
         print(exp);
       }
     }
@@ -188,6 +214,10 @@ class _LoginPageState extends State<LoginPage> {
                                         ],
                                       ),
                                       const SizedBox(height: 20),
+                                      ElevatedButton(
+                                          onPressed: () =>
+                                              sendingTransaction(context),
+                                          child: const Text("Send Tx")),
                                       SliderButton(
                                         action: () {
                                           Navigator.push(

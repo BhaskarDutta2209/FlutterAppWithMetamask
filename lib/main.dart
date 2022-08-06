@@ -23,8 +23,8 @@ class MyApp extends StatelessWidget {
     final web3client =
         Web3Client(dotenv.env['RPC_ENDPOINT'].toString(), client);
     return MaterialApp(
-      // initialRoute: MyRoutes.loginRoute,
-      initialRoute: MyRoutes.testingPage,
+      initialRoute: MyRoutes.loginRoute,
+      // initialRoute: MyRoutes.testingPage,
       routes: {
         MyRoutes.loginRoute: (context) => const LoginPage(),
         MyRoutes.secondPage: (context) => const SecondPage(),
