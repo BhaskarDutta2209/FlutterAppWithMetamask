@@ -43,6 +43,7 @@ dependencies:
   qr_code_scanner: ^1.0.0
   flutter_dotenv: ^5.0.2
   http: ^0.13.4
+  dropdown_search: ^5.0.2
   
 
 dev_dependencies:
@@ -71,6 +72,7 @@ flutter:
   assets:
     - .env
     - assets/images/
+    - assets/blockchain/
     - smartcontracts/artifacts/contracts/UPIToAddress.sol/UPIToAddress.json
   #   - images/a_dot_ham.jpeg
 

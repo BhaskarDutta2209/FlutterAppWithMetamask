@@ -3,6 +3,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart';
 import 'package:my_app/pages/confirmpayment_page.dart';
 import 'package:my_app/utils/helperfunctions.dart';
+import 'package:my_app/utils/priceFeedFunctions.dart';
 import 'package:my_app/utils/smartContractFunctions.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
 import 'dart:io' show Platform;
@@ -35,16 +36,6 @@ class _PayWidgetState extends State<PayWidget> {
       });
     });
   }
-
-  // void performPayment(context, String text) {
-  //   if (checkUPI(text)) {
-  //     String upiId = obtainUPIId(text);
-  //     Navigator.push(
-  //         context, MaterialPageRoute(builder: (_) => ConfirmPaymentPage()));
-  //   } else {
-  //     print('Not UPI');
-  //   }
-  // }
 
   @override
   void reassemble() {
@@ -87,14 +78,19 @@ class _PayWidgetState extends State<PayWidget> {
       ));
     } else if (checkUPI(result!.code.toString())) {
       return FutureBuilder<List>(
-          future: getAddress(obtainUPIId(result!.code.toString()), web3client),
+          future:
+              getUserDetails(obtainUPIId(result!.code.toString()), web3client),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const Center(
                 child: CircularProgressIndicator(),
               );
             }
-            return Text(snapshot.data![0].toString());
+            return ConfirmPaymentPage(
+                receiverName: snapshot.data![0][0].toString(),
+                receiverUPI: snapshot.data![0][1].toString(),
+                accountAddress: snapshot.data![0][2].toString(),
+                web3Client: web3client);
           });
     } else {
       return const Text("Not Valid UPI");
