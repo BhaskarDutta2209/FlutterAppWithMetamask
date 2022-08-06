@@ -26,18 +26,18 @@ class _ConfirmPaymentPageState extends State<ConfirmPaymentPage> {
   final _formKey = GlobalKey<FormState>();
 
   double fiatAmount = 0;
-  double cryptoAmount = 0;
   String crypto = "";
+  double cryptoAmount = 0;
+  bool cryptoPriceSet = false;
   double exchangeRate = 0;
+  double inrToUSD = 0;
 
   final List<String> _items = [
     'MATIC',
-    'UNI',
-    'BAT',
-    '1INCH',
-    'CAKE',
+    'DAI',
+    'LINK',
     'USDC',
-    'USDT'
+    'USDT',
   ];
 
   loadPrice(BuildContext context, String token) async {
@@ -53,13 +53,15 @@ class _ConfirmPaymentPageState extends State<ConfirmPaymentPage> {
     // Calculate Crypto to INR
 
     double usdPrice = await loadPrice(context, crypto);
-    double inrToUSD = await fetchPrice('INR');
-    print("INR to USD => " + inrToUSD.toString());
+    if (inrToUSD == 0) {
+      inrToUSD = await fetchPrice('INR');
+    }
+
     double _exchangeRate = usdPrice * inrToUSD;
-    print("Exchange Rate");
-    print(exchangeRate);
     setState(() {
       exchangeRate = _exchangeRate;
+      cryptoAmount = fiatAmount / exchangeRate;
+      cryptoPriceSet = true;
     });
   }
 
@@ -121,6 +123,7 @@ class _ConfirmPaymentPageState extends State<ConfirmPaymentPage> {
                               });
                             } else {
                               setState(() {
+                                print("SetState is called");
                                 fiatAmount = 0;
                                 cryptoAmount = 0;
                               });
@@ -131,16 +134,22 @@ class _ConfirmPaymentPageState extends State<ConfirmPaymentPage> {
                       ),
                       Row(
                         children: [
-                          Expanded(
-                              child: TextFormField(
-                            controller: TextEditingController(
-                                text: cryptoAmount.toString()),
-                            // initialValue: cryptoAmount.toString(),
-                            keyboardType: TextInputType.number,
-                            decoration: InputDecoration(
-                                border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(10))),
-                          )),
+                          (cryptoPriceSet)
+                              ? Expanded(
+                                  child: TextFormField(
+                                  controller: TextEditingController(
+                                      text: cryptoAmount.toString()),
+                                  enabled: cryptoAmount != 0,
+                                  keyboardType: TextInputType.number,
+                                  decoration: InputDecoration(
+                                      border: OutlineInputBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(10))),
+                                ))
+                              : (crypto.isNotEmpty)
+                                  ? const Expanded(child: Text("Loading Price"))
+                                  : const Expanded(
+                                      child: Text("Choose Crypto")),
                           const SizedBox(
                             width: 10,
                           ),
@@ -151,12 +160,12 @@ class _ConfirmPaymentPageState extends State<ConfirmPaymentPage> {
                             popupProps: const PopupProps.modalBottomSheet(
                                 showSearchBox: true),
                             onChanged: (value) async {
-                              print("onChanged executed");
-                              await calculateExchangePrice(
-                                  context, value.toString());
                               setState(() {
                                 crypto = value.toString();
+                                cryptoPriceSet = false;
                               });
+                              await calculateExchangePrice(
+                                  context, value.toString());
                             },
 
                             dropdownDecoratorProps: DropDownDecoratorProps(
@@ -182,9 +191,6 @@ class _ConfirmPaymentPageState extends State<ConfirmPaymentPage> {
                                   )))
                         ],
                       ),
-                      ElevatedButton(
-                          onPressed: () => loadPrice(context, 'MATIC'),
-                          child: const Text("Load Price"))
                     ],
                   ))
             ],

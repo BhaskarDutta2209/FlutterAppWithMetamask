@@ -46,6 +46,7 @@ Future<double> fetchPrice(String currency) async {
   final res = await http.get(Uri.parse(url));
 
   final jsonPayload = jsonDecode(res.body);
+  print(jsonPayload);
   final rate =
       jsonPayload["Realtime Currency Exchange Rate"]["5. Exchange Rate"];
 
