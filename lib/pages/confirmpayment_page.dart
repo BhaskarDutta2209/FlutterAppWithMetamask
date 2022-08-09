@@ -1,20 +1,29 @@
+import 'dart:math';
+
 import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:my_app/utils/helperfunctions.dart';
 import 'package:my_app/utils/priceFeedFunctions.dart';
+import 'package:my_app/utils/smartContractInteractions.dart';
 import 'package:web3dart/web3dart.dart';
 
 class ConfirmPaymentPage extends StatefulWidget {
+  final connector;
+  final uri;
+  final senderAddress;
   final receiverName;
   final receiverUPI;
-  final accountAddress;
+  final receiverAddress;
   final Web3Client web3Client;
   const ConfirmPaymentPage(
       {Key? key,
-      @required this.receiverName,
-      @required this.receiverUPI,
-      @required this.accountAddress,
+      required this.connector,
+      required this.uri,
+      required this.senderAddress,
+      required this.receiverName,
+      required this.receiverUPI,
+      required this.receiverAddress,
       required this.web3Client})
       : super(key: key);
 
@@ -86,7 +95,7 @@ class _ConfirmPaymentPageState extends State<ConfirmPaymentPage> {
                     fontSize: 20),
               ),
               Text(
-                truncateString(widget.accountAddress, 10, 3),
+                truncateString(widget.receiverAddress, 10, 3),
                 style: TextStyle(
                     fontFamily:
                         Theme.of(context).textTheme.headline3!.fontFamily,
@@ -185,7 +194,26 @@ class _ConfirmPaymentPageState extends State<ConfirmPaymentPage> {
                         children: [
                           Expanded(
                               child: ElevatedButton(
-                                  onPressed: () {},
+                                  onPressed: () async {
+                                    if (crypto == 'MATIC') {
+                                      await sendEther(
+                                          widget.connector,
+                                          widget.uri,
+                                          widget.senderAddress,
+                                          widget.receiverAddress,
+                                          BigInt.from(
+                                              cryptoAmount * pow(10, 18)));
+                                    } else {
+                                      await transferERC20Token(
+                                          widget.connector,
+                                          widget.uri,
+                                          widget.web3Client,
+                                          crypto,
+                                          widget.senderAddress,
+                                          widget.receiverAddress,
+                                          cryptoAmount);
+                                    }
+                                  },
                                   child: const Text(
                                     "Pay",
                                   )))

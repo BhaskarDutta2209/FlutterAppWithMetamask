@@ -20,7 +20,7 @@ Future<DeployedContract> loadContract() async {
 Future<List<dynamic>> getAddress(String uri, Web3Client web3client) async {
   print("Finding the address");
   final contract = await loadContract();
-  final ethFunction = contract.function('getAddress');
+  ContractFunction ethFunction = contract.function('getAddress');
   List<dynamic> args = [uri];
   final result = await web3client.call(
       contract: contract, function: ethFunction, params: args);

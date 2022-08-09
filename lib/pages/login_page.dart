@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:my_app/pages/second_page.dart';
 import 'package:my_app/utils/helperfunctions.dart';
 import 'package:my_app/utils/routes.dart';
+import 'package:my_app/utils/smartContractInteractions.dart';
 import 'package:walletconnect_dart/walletconnect_dart.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -75,10 +76,10 @@ class _LoginPageState extends State<LoginPage> {
             EthereumWalletConnectProvider(connector);
         launchUrlString(_uri, mode: LaunchMode.externalApplication);
         var res = await provider.sendTransaction(
-            to: "0x18a3370A06e3F83C9Ad8C488A7F02E735a95A484",
-            from: _session.accounts[0],
-            value: BigInt.from(100000000000000000),
-            );
+          to: "0x18a3370A06e3F83C9Ad8C488A7F02E735a95A484",
+          from: _session.accounts[0],
+          value: BigInt.from(100000000000000000),
+        );
         print(res);
       } catch (exp) {
         print("Error while sending transaction");
@@ -214,16 +215,21 @@ class _LoginPageState extends State<LoginPage> {
                                         ],
                                       ),
                                       const SizedBox(height: 20),
-                                      ElevatedButton(
-                                          onPressed: () =>
-                                              sendingTransaction(context),
-                                          child: const Text("Send Tx")),
+                                      // ElevatedButton(
+                                      //     onPressed: () => linkUPI(
+                                      //         connector,
+                                      //         _uri,
+                                      //         _session.accounts[0],
+                                      //         "bhaskar@testupi",
+                                      //         "Bhaskar Dutta"),
+                                      //     child: const Text("Send Tx")),
                                       SliderButton(
                                         action: () {
                                           Navigator.push(
                                               context,
                                               MaterialPageRoute(
                                                   builder: (_) => SecondPage(
+                                                      connector: connector,
                                                       session: _session,
                                                       uri: _uri)));
                                         },

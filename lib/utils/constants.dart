@@ -18,3 +18,18 @@ String getAggregatorAddress(String crypto) {
       return "";
   }
 }
+
+String getTokenContractAddress(String crypto) {
+  switch (crypto) {
+    case "LINK":
+      return "0x326C977E6efc84E512bB9C30f76E30c160eD06FB";
+    case "DAI":
+      return "0xd393b1E02dA9831Ff419e22eA105aAe4c47E1253";
+    case "USDC":
+      return "0xe6b8a5CF854791412c1f6EFC7CAf629f5Df1c747";
+    case "USDT":
+      return "0xA02f6adc7926efeBBd59Fd43A84f4E0c0c91e832";
+    default:
+      return "";
+  }
+}

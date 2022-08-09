@@ -27,17 +27,17 @@ class MyApp extends StatelessWidget {
       // initialRoute: MyRoutes.testingPage,
       routes: {
         MyRoutes.loginRoute: (context) => const LoginPage(),
-        MyRoutes.secondPage: (context) => const SecondPage(),
-        MyRoutes.testingPage: (context) => Scaffold(
-              appBar: AppBar(
-                title: const Text("Testing page"),
-              ),
-              body: ConfirmPaymentPage(
-                  receiverName: "Bhaskar Dutta",
-                  receiverUPI: "bhaskar220999@oksbi",
-                  accountAddress: "0x3310A13F37Ac2FC7A932C4f1a5fE15F342f4E048",
-                  web3Client: web3client),
-            )
+        // MyRoutes.secondPage: (context) => const SecondPage(),
+        // MyRoutes.testingPage: (context) => Scaffold(
+        //       appBar: AppBar(
+        //         title: const Text("Testing page"),
+        //       ),
+        //       body: ConfirmPaymentPage(
+        //           receiverName: "Bhaskar Dutta",
+        //           receiverUPI: "bhaskar220999@oksbi",
+        //           accountAddress: "0x3310A13F37Ac2FC7A932C4f1a5fE15F342f4E048",
+        //           web3Client: web3client),
+        //     )
       },
       theme: ThemeData(
           textTheme: TextTheme(

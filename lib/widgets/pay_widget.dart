@@ -11,9 +11,9 @@ import 'dart:io' show Platform;
 import 'package:web3dart/web3dart.dart';
 
 class PayWidget extends StatefulWidget {
-  final session, uri;
+  final connector, session, uri;
 
-  const PayWidget({Key? key, @required this.session, @required this.uri})
+  const PayWidget({Key? key, required this.connector, required this.session, required this.uri})
       : super(key: key);
 
   @override
@@ -87,9 +87,12 @@ class _PayWidgetState extends State<PayWidget> {
               );
             }
             return ConfirmPaymentPage(
+                connector: widget.connector,
+                uri: widget.uri,
+                senderAddress: widget.session.accounts[0],
                 receiverName: snapshot.data![0][0].toString(),
                 receiverUPI: snapshot.data![0][1].toString(),
-                accountAddress: snapshot.data![0][2].toString(),
+                receiverAddress: snapshot.data![0][2].toString(),
                 web3Client: web3client);
           });
     } else {

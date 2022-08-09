@@ -9,9 +9,7 @@ import 'package:http/http.dart' as http;
 Future<DeployedContract> loadAggregatorContract(String crypto) async {
   String aggregatorContractDataString = await rootBundle
       .loadString('assets/blockchain/chainlinkAggregatorAbi.json');
-  print("cryto -> " + crypto);
-  String address = getAggregatorAddress(crypto);
-  print("address -> " + address);
+  String address = getAggregatorAddress(crypto);  
   final contract = DeployedContract(
       ContractAbi.fromJson(aggregatorContractDataString, "EACAggregatorProxy"),
       EthereumAddress.fromHex(address));

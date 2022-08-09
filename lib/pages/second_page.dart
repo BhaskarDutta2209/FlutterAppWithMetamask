@@ -6,8 +6,12 @@ import 'package:my_app/widgets/pay_widget.dart';
 import 'package:my_app/widgets/receive_widget.dart';
 
 class SecondPage extends StatefulWidget {
-  final session, uri;
-  const SecondPage({Key? key, @required this.session, @required this.uri})
+  final connector, session, uri;
+  const SecondPage(
+      {Key? key,
+      required this.connector,
+      required this.session,
+      required this.uri})
       : super(key: key);
 
   @override
@@ -21,11 +25,13 @@ class _SecondPageState extends State<SecondPage> {
 
   @override
   Widget build(BuildContext context) {
-
     final List<Widget> _widgetOptions = [
       HomeWidget(),
       CardsWidget(),
-      PayWidget(session: widget.session, uri: widget.uri),
+      PayWidget(
+          connector: widget.connector,
+          session: widget.session,
+          uri: widget.uri),
       ReceiveWidget(
         session: widget.session,
         uri: widget.uri,

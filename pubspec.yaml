@@ -72,7 +72,8 @@ flutter:
   assets:
     - .env
     - assets/images/
-    - assets/blockchain/
+    - assets/blockchain/chainlinkAggregatorAbi.json
+    - assets/blockchain/erc20TokenContractABI.json
     - smartcontracts/artifacts/contracts/UPIToAddress.sol/UPIToAddress.json
   #   - images/a_dot_ham.jpeg
 
