@@ -13,7 +13,11 @@ import 'package:web3dart/web3dart.dart';
 class PayWidget extends StatefulWidget {
   final connector, session, uri;
 
-  const PayWidget({Key? key, required this.connector, required this.session, required this.uri})
+  const PayWidget(
+      {Key? key,
+      required this.connector,
+      required this.session,
+      required this.uri})
       : super(key: key);
 
   @override
@@ -22,8 +26,11 @@ class PayWidget extends StatefulWidget {
 
 class _PayWidgetState extends State<PayWidget> {
   Barcode? result;
+  String upiId = "";
+  bool upiIdFound = false;
   QRViewController? controller;
   final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
+  final _formKey = GlobalKey<FormState>();
 
   void _onQRViewCreated(QRViewController controller) {
     setState(() {
@@ -31,9 +38,18 @@ class _PayWidgetState extends State<PayWidget> {
       controller.resumeCamera();
     });
     controller.scannedDataStream.listen((scanData) {
-      setState(() {
-        result = scanData;
-      });
+      if (checkUPI(scanData.code.toString())) {
+        setState(() {
+          result = scanData;
+          upiId = obtainUPIId(scanData.code.toString());
+          upiIdFound = true;
+        });
+      } else {
+        setState(() {
+          result = scanData;
+          upiIdFound = false;
+        });
+      }
     });
   }
 
@@ -63,40 +79,93 @@ class _PayWidgetState extends State<PayWidget> {
         Web3Client(dotenv.env['RPC_ENDPOINT'].toString(), client);
 
     readQr(context);
-    if (result == null) {
-      return Center(
-          child: QRView(
-        key: qrKey,
-        onQRViewCreated: _onQRViewCreated,
-        overlay: QrScannerOverlayShape(
-          borderColor: Colors.purple,
-          borderRadius: 10,
-          borderLength: 30,
-          borderWidth: 10,
-          cutOutSize: 250,
-        ),
-      ));
-    } else if (checkUPI(result!.code.toString())) {
+    if (!upiIdFound) {
+      return Column(
+        children: [
+          Container(
+            height: 100,
+            padding: const EdgeInsets.all(10),
+            child: Form(
+                key: _formKey,
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: TextFormField(
+                        onSaved: (value) {
+                          setState(() {
+                            upiId = value.toString();
+                            upiIdFound = true;
+                          });
+                        },
+                        decoration: const InputDecoration(
+                            hintText: "Enter UPI Id",
+                            labelText: "Receiver UPI Id"),
+                      ),
+                    ),
+                    Container(
+                      width: 50,
+                      child: ElevatedButton(
+                        child: const Icon(Icons.send),
+                        onPressed: () {
+                          _formKey.currentState!.save();
+                        },
+                      ),
+                    )
+                  ],
+                )),
+          ),
+          Expanded(
+            child: QRView(
+              key: qrKey,
+              onQRViewCreated: _onQRViewCreated,
+              overlay: QrScannerOverlayShape(
+                  borderColor: Colors.purple,
+                  borderRadius: 10,
+                  borderLength: 30,
+                  borderWidth: 10,
+                  cutOutSize: 250),
+            ),
+          )
+        ],
+      );
+    } else {
       return FutureBuilder<List>(
-          future:
-              getUserDetails(obtainUPIId(result!.code.toString()), web3client),
+          future: getUserDetails(upiId, web3client),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const Center(
                 child: CircularProgressIndicator(),
               );
             }
-            return ConfirmPaymentPage(
-                connector: widget.connector,
-                uri: widget.uri,
-                senderAddress: widget.session.accounts[0],
-                receiverName: snapshot.data![0][0].toString(),
-                receiverUPI: snapshot.data![0][1].toString(),
-                receiverAddress: snapshot.data![0][2].toString(),
-                web3Client: web3client);
+            print("Snapshot => " + snapshot.data!.toString());
+            if (snapshot.data![0][3].toString() == "false") {
+              return AlertDialog(
+                title: const Text("Unregistered UPI"),
+                content:
+                    const Text("This UPI is not registered. Please try again"),
+                actions: [
+                  TextButton(
+                      onPressed: () {
+                        setState(() {
+                          result = null;
+                          upiId = "";
+                          upiIdFound = false;
+                        });
+                      },
+                      child: const Text("Ok"))
+                ],
+              );
+            } else {
+              return ConfirmPaymentPage(
+                  connector: widget.connector,
+                  uri: widget.uri,
+                  senderAddress: widget.session.accounts[0],
+                  receiverName: snapshot.data![0][0].toString(),
+                  receiverUPI: snapshot.data![0][1].toString(),
+                  receiverAddress: snapshot.data![0][2].toString(),
+                  web3Client: web3client);
+            }
           });
-    } else {
-      return const Text("Not Valid UPI");
     }
   }
 

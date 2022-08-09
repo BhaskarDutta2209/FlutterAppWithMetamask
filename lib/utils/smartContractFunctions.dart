@@ -8,7 +8,6 @@ Future<DeployedContract> loadContract() async {
       'smartcontracts/artifacts/contracts/UPIToAddress.sol/UPIToAddress.json');
   final contractDataJSON = await jsonDecode(contractDataString);
   final abi = jsonEncode(contractDataJSON['abi']);
-  print(abi.toString());
   String address = Constants.contractAddress;
   final contract = DeployedContract(
       ContractAbi.fromJson(abi.toString(), "UPIToAddress"),
@@ -29,11 +28,17 @@ Future<List<dynamic>> getAddress(String uri, Web3Client web3client) async {
 }
 
 Future<List<dynamic>> getUserDetails(String uri, Web3Client web3client) async {
-  final contract = await loadContract();
-  final ethFunction = contract.function('getUserDetails');
-  List<dynamic> args = [uri];
-  final result = await web3client.call(
-      contract: contract, function: ethFunction, params: args);
-  print("Found address" + result.toString());
-  return result;
+  try {
+    final contract = await loadContract();
+    final ethFunction = contract.function('getUserDetails');
+    List<dynamic> args = [uri];
+    final result = await web3client.call(
+        contract: contract, function: ethFunction, params: args);
+    print("Found address" + result.toString());
+    return result;
+  } catch (exp) {
+    print("Exception while getting User Details");
+    print(exp);
+    return [];
+  }
 }
