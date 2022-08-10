@@ -7,22 +7,26 @@ import 'package:url_launcher/url_launcher_string.dart';
 import 'package:walletconnect_dart/walletconnect_dart.dart';
 import 'package:web3dart/web3dart.dart';
 
-sendEther(WalletConnect connector, String uri, String senderAddress,
-    String receiverAddress, BigInt value) async {
+Future<String> sendEther(WalletConnect connector, String uri,
+    String senderAddress, String receiverAddress, BigInt value) async {
   try {
     EthereumWalletConnectProvider provider =
         EthereumWalletConnectProvider(connector);
     launchUrlString(uri, mode: LaunchMode.externalApplication);
     var res = await provider.sendTransaction(
         to: receiverAddress, from: senderAddress, value: value);
+    print("Result of sending Ether");
+    print(res.toString());
+    return res.toString();
   } catch (exp) {
     print("Error while transfering Ether");
     print(exp);
+    return "";
   }
 }
 
-linkUPI(WalletConnect connector, String uri, String receiverAddress,
-    String upiId, String name) async {
+Future<String> linkUPI(WalletConnect connector, String uri,
+    String receiverAddress, String upiId, String name) async {
   try {
     final contract = await loadContract();
     ContractFunction ethFunction = contract.function('linkUPI');
@@ -36,13 +40,15 @@ linkUPI(WalletConnect connector, String uri, String receiverAddress,
         from: receiverAddress, to: Constants.contractAddress, data: data);
     print("linkUPI");
     print(res.toString());
+    return res.toString();
   } catch (exp) {
     print("Error while linking UPI");
     print(exp);
+    return "";
   }
 }
 
-transferERC20Token(
+Future<String> transferERC20Token(
     WalletConnect connector,
     String uri,
     Web3Client web3Client,
@@ -50,46 +56,48 @@ transferERC20Token(
     String senderAddress,
     String receiverAddress,
     double value) async {
-  print("transfering ERC20 token");
   try {
-    // // Load the erc20 token contract
+    // Load the erc20 token contract
     String erc20ContractABI = await rootBundle
         .loadString('assets/blockchain/erc20TokenContractABI.json');
     String contractAddress = getTokenContractAddress(tokenName);
     final contract = DeployedContract(
-        ContractAbi.fromJson(erc20ContractABI, "LinkToken"),
+        ContractAbi.fromJson(erc20ContractABI, "ERC20"),
         EthereumAddress.fromHex(contractAddress));
 
-    // // Get the decimal value
-    // ContractFunction function = contract.function('decimals');
-    // List<dynamic> args = [];
-
-    // Calculate the amount to send
-
-    // Send the tokens
     EthereumWalletConnectProvider provider =
         EthereumWalletConnectProvider(connector);
+
+    // Get the decimal
+    ContractFunction decimalFunction = contract.function('decimals');
+    final decimalResult = await web3Client
+        .call(contract: contract, function: decimalFunction, params: []);
+    double decimal = double.parse(decimalResult[0].toString());
+    print("Decimal => " + decimal.toString());
+
+    // Generate data for the transactio
     ContractFunction function = contract.function('transfer');
     List<dynamic> args = [
       EthereumAddress.fromHex(receiverAddress),
-      BigInt.from(value * pow(10, 18))
+      BigInt.from(value * pow(10, decimal))
     ];
     final data = function.encodeCall(args);
 
+    // Get the gasPrice
     EtherAmount gasPrice = await web3Client.getGasPrice();
 
+    // Send the transaction
     launchUrlString(uri, mode: LaunchMode.externalApplication);
     var res = await provider.sendTransaction(
         from: senderAddress,
         to: contractAddress,
         data: data,
-        // gas: int.parse(gas.getInEther.toString()),
         gasPrice: BigInt.from(int.parse(gasPrice.getInWei.toString())));
 
-    print("transfering ERC20 token");
-    print(res.toString());
+    return res.toString();
   } catch (exp) {
     print("Error while transfering ERC20 token");
     print(exp);
+    return "";
   }
 }

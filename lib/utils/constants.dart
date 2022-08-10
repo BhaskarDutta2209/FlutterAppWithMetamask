@@ -24,7 +24,7 @@ String getTokenContractAddress(String crypto) {
     case "LINK":
       return "0x326C977E6efc84E512bB9C30f76E30c160eD06FB";
     case "DAI":
-      return "0xd393b1E02dA9831Ff419e22eA105aAe4c47E1253";
+      return "0xcB1e72786A6eb3b44C2a2429e317c8a2462CFeb1";
     case "USDC":
       return "0xe6b8a5CF854791412c1f6EFC7CAf629f5Df1c747";
     case "USDT":

@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:my_app/utils/blockexplorerServices.dart';
 import 'package:my_app/utils/helperfunctions.dart';
 import 'package:my_app/utils/priceFeedFunctions.dart';
 import 'package:my_app/utils/smartContractInteractions.dart';
@@ -40,6 +41,9 @@ class _ConfirmPaymentPageState extends State<ConfirmPaymentPage> {
   bool cryptoPriceSet = false;
   double exchangeRate = 0;
   double inrToUSD = 0;
+  bool paymentTransactionMade = false;
+  String paymentTransactionHash = "";
+  bool paymentTransactionSuccess = false;
 
   final List<String> _items = [
     'MATIC',
@@ -193,34 +197,65 @@ class _ConfirmPaymentPageState extends State<ConfirmPaymentPage> {
                       Row(
                         children: [
                           Expanded(
+                              child: (paymentTransactionMade)
+                                  ? (paymentTransactionHash.isEmpty)
+                                      ? Container(
+                                          child: const Text(
+                                              "Pending transaction confirmation"))
+                                      : Container(
+                                          child: const Text(
+                                              "Transaction Hash received"),
+                                        )
+                                  : ElevatedButton(
+                                      onPressed: () async {
+                                        String tx = "";
+                                        if (cryptoAmount != 0) {
+                                          setState(() {
+                                            paymentTransactionMade = true;
+                                          });
+                                          if (crypto == 'MATIC') {
+                                            tx = await sendEther(
+                                                widget.connector,
+                                                widget.uri,
+                                                widget.senderAddress,
+                                                widget.receiverAddress,
+                                                BigInt.from(cryptoAmount *
+                                                    pow(10, 18)));
+                                          } else {
+                                            tx = await transferERC20Token(
+                                                widget.connector,
+                                                widget.uri,
+                                                widget.web3Client,
+                                                crypto,
+                                                widget.senderAddress,
+                                                widget.receiverAddress,
+                                                cryptoAmount);
+                                          }
+                                          await isTransactionConfirmed(tx);
+                                          setState(() {
+                                            paymentTransactionHash = tx;
+                                          });
+                                        }
+                                      },
+                                      child: const Text(
+                                        "Pay",
+                                      ))),
+                          Expanded(
                               child: ElevatedButton(
                                   onPressed: () async {
-                                    if (crypto == 'MATIC') {
-                                      await sendEther(
-                                          widget.connector,
-                                          widget.uri,
-                                          widget.senderAddress,
-                                          widget.receiverAddress,
-                                          BigInt.from(
-                                              cryptoAmount * pow(10, 18)));
-                                    } else {
-                                      await transferERC20Token(
-                                          widget.connector,
-                                          widget.uri,
-                                          widget.web3Client,
-                                          crypto,
-                                          widget.senderAddress,
-                                          widget.receiverAddress,
-                                          cryptoAmount);
-                                    }
+                                    bool confirmation =
+                                        await isTransactionConfirmed(
+                                            paymentTransactionHash);
+                                    setState(() {
+                                      paymentTransactionSuccess = confirmation;
+                                    });
                                   },
-                                  child: const Text(
-                                    "Pay",
-                                  )))
+                                  child: const Text("Refresh Tx")))
                         ],
                       ),
                     ],
-                  ))
+                  )),
+              Text("${paymentTransactionSuccess}")
             ],
           )
         ],
