@@ -44,6 +44,7 @@ dependencies:
   flutter_dotenv: ^5.0.2
   http: ^0.13.4
   dropdown_search: ^5.0.2
+  lottie: ^1.4.1
   
 
 dev_dependencies:
@@ -75,6 +76,9 @@ flutter:
     - assets/blockchain/chainlinkAggregatorAbi.json
     - assets/blockchain/erc20TokenContractABI.json
     - smartcontracts/artifacts/contracts/UPIToAddress.sol/UPIToAddress.json
+    - assets/lottie/success.json
+    - assets/lottie/timeout.json
+    - assets/lottie/transactionfailed.json
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

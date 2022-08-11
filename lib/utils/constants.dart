@@ -1,5 +1,6 @@
 class Constants {
   static String contractAddress = "0x6bb06385cFa489480F5163558F437fa0Ff541a5C";
+  static int blockTimeInSeconds = 3;
 }
 
 String getAggregatorAddress(String crypto) {

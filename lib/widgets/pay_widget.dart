@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart';
-import 'package:my_app/widgets/confirmpayment_widget.dart';
+import 'package:my_app/widgets/paymentDetails_widget.dart';
 import 'package:my_app/utils/helperfunctions.dart';
 import 'package:my_app/utils/priceFeedFunctions.dart';
 import 'package:my_app/utils/smartContractFunctions.dart';
@@ -156,7 +156,7 @@ class _PayWidgetState extends State<PayWidget> {
                 ],
               );
             } else {
-              return ConfirmPaymentPage(
+              return PaymentDetailsPage(
                   connector: widget.connector,
                   uri: widget.uri,
                   senderAddress: widget.session.accounts[0],
