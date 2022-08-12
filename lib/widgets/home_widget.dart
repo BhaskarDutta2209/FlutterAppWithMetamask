@@ -1,5 +1,6 @@
 import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/material.dart';
+import 'package:my_app/pages/transactionCompletion_page.dart';
 import 'package:my_app/utils/smartcontractInteractions.dart';
 
 class HomeWidget extends StatefulWidget {
@@ -114,13 +115,19 @@ class _HomeWidgetState extends State<HomeWidget> {
                                         onPressed: () async {
                                           if (_formKey.currentState!
                                               .validate()) {
-                                            await linkUPI(
+                                            String txHash = await linkUPI(
                                                 widget.connector,
                                                 widget.uri,
                                                 widget.receiverAddress,
                                                 upi,
                                                 name);
                                             Navigator.pop(context);
+                                            Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                    builder: (_) =>
+                                                        TransactionCompletionPage(
+                                                            txHash: txHash)));
                                           }
                                         },
                                         child: const Text("Link")),
