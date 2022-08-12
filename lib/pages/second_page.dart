@@ -26,7 +26,11 @@ class _SecondPageState extends State<SecondPage> {
   @override
   Widget build(BuildContext context) {
     final List<Widget> _widgetOptions = [
-      HomeWidget(),
+      HomeWidget(
+        connector: widget.connector,
+        uri: widget.uri,
+        receiverAddress: widget.session.accounts[0],
+      ),
       CardsWidget(),
       PayWidget(
           connector: widget.connector,
@@ -43,7 +47,7 @@ class _SecondPageState extends State<SecondPage> {
         title: Text(appBarTitles[_currentIndex]),
         automaticallyImplyLeading: false,
       ),
-      body: Center(child: _widgetOptions.elementAt(_currentIndex)),
+      body: _widgetOptions.elementAt(_currentIndex),
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
         items: const [

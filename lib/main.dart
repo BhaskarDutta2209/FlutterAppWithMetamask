@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:my_app/pages/transactionCompletion_page.dart';
+import 'package:my_app/widgets/home_widget.dart';
 import 'package:my_app/widgets/paymentDetails_widget.dart';
 import 'package:my_app/pages/second_page.dart';
 import 'package:my_app/utils/routes.dart';
@@ -28,18 +29,13 @@ class MyApp extends StatelessWidget {
       // initialRoute: MyRoutes.testingPage,
       routes: {
         MyRoutes.loginRoute: (context) => const LoginPage(),
-        MyRoutes.testingPage: (context) => const TransactionCompletionPage(txHash: "0x0a8e1c864eaffaed6563ab57d2614788fb1126cf1e933bf7d8f25d539841f906")
+        // MyRoutes.testingPage: (context) => const TransactionCompletionPage(txHash: "0x0a8e1c864eaffaed6563ab57d2614788fb1126cf1e933bf7d8f25d539841f906")
         // MyRoutes.secondPage: (context) => const SecondPage(),
         // MyRoutes.testingPage: (context) => Scaffold(
-        //       appBar: AppBar(
-        //         title: const Text("Testing page"),
-        //       ),
-        //       body: PaymentDetailsPage(
-        //           receiverName: "Bhaskar Dutta",
-        //           receiverUPI: "bhaskar220999@oksbi",
-        //           accountAddress: "0x3310A13F37Ac2FC7A932C4f1a5fE15F342f4E048",
-        //           web3Client: web3client),
-        //     )
+        //     appBar: AppBar(
+        //       title: const Text("Testing page"),
+        //     ),
+        //     body: HomeWidget())
       },
       theme: ThemeData(
           textTheme: TextTheme(
