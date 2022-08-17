@@ -10,6 +10,7 @@ import 'package:walletconnect_dart/walletconnect_dart.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:slider_button/slider_button.dart';
+import 'package:web3dart/credentials.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -93,15 +94,34 @@ class _LoginPageState extends State<LoginPage> {
         EthereumWalletConnectProvider provider =
             EthereumWalletConnectProvider(connector);
         launchUrlString(_uri, mode: LaunchMode.externalApplication);
-        var signature = await provider.personalSign(
-            message: message, address: _session.accounts[0], password: "");
-        print("Signature => " + signature.toString());
-        // launchUrlString(_uri, mode: LaunchMode.externalApplication);
-        // var res = await provider.sendTransaction(
-        //     to: "0x18a3370A06e3F83C9Ad8C488A7F02E735a95A484",
-        //     from: _session.accounts[0],
-        //     value: BigInt.from(1000000000000000000));
-        // print(res);
+        Map<String, dynamic> data = {
+          "types": {
+            "EIP712Domain": [
+              {"name": "name", "type": "string"},
+              {"name": "version", "type": "string"},
+              {"name": "chainId", "type": "uint256"},
+            ],
+            "data": [
+              {"name": "user", "type": "string"},
+              {"name": "appname", "type": "string"},
+              {"name": "acknowledgement", "type": "string"}
+            ]
+          },
+          "primaryType": "data",
+          "domain": {
+            "name": "CryptoPay",
+            "version": "1.0",
+            "chainId": _session.chainId,
+            
+          },
+          "message": {
+            "user": _session.accounts[0],
+            "appname": "CryptoPay",
+            "acknowledgement": "I acknowledge that this app still under development"
+          }
+        };
+        var signature = await provider.signTypeData(
+            address: _session.accounts[0], typedData: data);
         setState(() {
           _signature = signature;
         });
