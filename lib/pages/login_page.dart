@@ -1,4 +1,7 @@
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:my_app/pages/second_page.dart';
 import 'package:my_app/utils/helperfunctions.dart';
 import 'package:my_app/utils/routes.dart';
@@ -27,6 +30,46 @@ class _LoginPageState extends State<LoginPage> {
           ]));
 
   var _session, _uri, _signature;
+
+  final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
+  final FlutterLocalNotificationsPlugin fltNotification =
+      FlutterLocalNotificationsPlugin();
+
+  @override
+  void initState() {
+    super.initState();
+    _firebaseMessaging.getToken().then((value) => print(value));
+    initMessaging().then((value) => null);
+  }
+
+  Future<void> initMessaging() async {
+    var androidInit = AndroidInitializationSettings("@mipmap/ic_launcher");
+    var iosInit = IOSInitializationSettings();
+    var initSettings =
+        InitializationSettings(android: androidInit, iOS: iosInit);
+    await fltNotification.initialize(initSettings);
+    var androidDetails = AndroidNotificationDetails('1', 'channelName',
+        enableVibration: true,
+        importance: Importance.max,
+        priority: Priority.high);
+    var iosDetails = IOSNotificationDetails();
+    var generalNotificationDetails =
+        NotificationDetails(android: androidDetails, iOS: iosDetails);
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
+      _firebaseMessagingBackgroundHandler(message, generalNotificationDetails);
+    });
+  }
+
+  Future<void> _firebaseMessagingBackgroundHandler(
+      RemoteMessage message, var _generalNotificationDetails) async {
+    print("Message Received => " + message.notification!.body.toString());
+    final notification = message.notification;
+    final android = message.notification?.android;
+    if (notification != null && android != null) {
+      fltNotification.show(notification.hashCode, notification.title,
+          notification.body, _generalNotificationDetails);
+    }
+  }
 
   loginUsingMetamask(BuildContext context) async {
     if (!connector.connected) {

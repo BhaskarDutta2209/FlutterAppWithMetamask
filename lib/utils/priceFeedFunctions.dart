@@ -9,7 +9,7 @@ import 'package:http/http.dart' as http;
 Future<DeployedContract> loadAggregatorContract(String crypto) async {
   String aggregatorContractDataString = await rootBundle
       .loadString('assets/blockchain/chainlinkAggregatorAbi.json');
-  String address = getAggregatorAddress(crypto);  
+  String address = getAggregatorAddress(crypto);
   final contract = DeployedContract(
       ContractAbi.fromJson(aggregatorContractDataString, "EACAggregatorProxy"),
       EthereumAddress.fromHex(address));
@@ -39,12 +39,35 @@ Future<double> getLatestRoundData(String crypto, Web3Client web3client) async {
 }
 
 Future<double> fetchPrice(String currency) async {
-  String url =
-      "https://www.alphavantage.co/query?function=CURRENCY_EXCHANGE_RATE&from_currency=USD&to_currency=${currency}&apikey=${dotenv.env['ALPHAVANTAGE_KEY'].toString()}";
-  final res = await http.get(Uri.parse(url));
+  // String url =
+  //     "https://www.alphavantage.co/query?function=CURRENCY_EXCHANGE_RATE&from_currency=USD&to_currency=${currency}&apikey=${dotenv.env['ALPHAVANTAGE_KEY'].toString()}";
+  // final res = await http.get(Uri.parse(url));
 
+  // final jsonPayload = jsonDecode(res.body);
+  // print("Received from alphavantage => " + jsonPayload.toString());
+  // final rate =
+  //     jsonPayload["Realtime Currency Exchange Rate"]["5. Exchange Rate"];
+
+  // // print("Rate => " + rate.toString());
+  // // print("Alpha Vantage => " + res.body.toString());
+  // return double.parse(rate);
+
+  String url = "alpha-vantage.p.rapidapi.com";
+
+  final queryParameters = {
+    'to_currency': '${currency}',
+    'function': 'CURRENCY_EXCHANGE_RATE',
+    'from_currency': 'USD'
+  };
+  final headers = {
+    'X-RapidAPI-Key': dotenv.env['X-RapidAPI-Key'].toString(),
+    'X-RapidAPI-Host': 'alpha-vantage.p.rapidapi.com'
+  };
+
+  final res =
+      await http.get(Uri.https(url, "/query", queryParameters), headers: headers);
   final jsonPayload = jsonDecode(res.body);
-  print(jsonPayload);
+  print("Received from alphavantage => " + jsonPayload.toString());
   final rate =
       jsonPayload["Realtime Currency Exchange Rate"]["5. Exchange Rate"];
 
