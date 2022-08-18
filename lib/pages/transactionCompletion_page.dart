@@ -5,12 +5,20 @@ import 'package:flutter/src/foundation/key.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:lottie/lottie.dart';
 import 'package:my_app/datastructures/enums.dart';
+import 'package:my_app/utils/awsAPIGateways.dart';
 import 'package:my_app/utils/blockexplorerServices.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
 class TransactionCompletionPage extends StatefulWidget {
-  final txHash;
-  const TransactionCompletionPage({Key? key, required this.txHash})
+  final txHash, targetAddress, amountReceived, crypto;
+  final bool isCryptoTransfer;
+  const TransactionCompletionPage(
+      {Key? key,
+      required this.txHash,
+      required this.isCryptoTransfer,
+      @required this.targetAddress,
+      @required this.amountReceived,
+      @required this.crypto})
       : super(key: key);
 
   @override
@@ -82,6 +90,13 @@ class _TransactionCompletionPageState extends State<TransactionCompletionPage> {
                       ],
                     ));
                   } else if (snapshot.data == TransactionState.success) {
+                    if (widget.isCryptoTransfer) {
+                      sendNotification(
+                              widget.targetAddress.toString(),
+                              widget.amountReceived.toString(),
+                              widget.crypto.toString())
+                          .then((value) => {});
+                    }
                     return Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [

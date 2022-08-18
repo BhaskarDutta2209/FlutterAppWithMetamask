@@ -1,0 +1,43 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "FlutterAppWithMetamask",
+            "request": "launch",
+            "type": "dart"
+        },
+        {
+            "name": "FlutterAppWithMetamask (profile mode)",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "profile"
+        },
+        {
+            "name": "FlutterAppWithMetamask (release mode)",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "release"
+        },
+        {
+            "name": "Android A",
+            "request": "launch",
+            "type": "dart",
+            "deviceId": "adb-RZ8M93T8VHM-WrMCBV._adb-tls-connect._tcp."
+        },
+        {
+            "name": "Android B",
+            "request": "launch",
+            "type": "dart",
+            "deviceId": "emulator-5554"
+        }
+    ],
+    "compounds": [
+        {
+            "name": "Both Devices",
+            "configurations": ["Android A", "Android B"]
+        }
+    ]
+}

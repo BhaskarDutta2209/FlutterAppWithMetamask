@@ -226,6 +226,10 @@ class _PaymentDetailsPageState extends State<PaymentDetailsPage> {
                                           MaterialPageRoute(
                                               builder: (_) =>
                                                   TransactionCompletionPage(
+                                                    amountReceived: fiatAmount,
+                                                    crypto: crypto,
+                                                    targetAddress: widget.receiverAddress,
+                                                    isCryptoTransfer: true,
                                                       txHash: tx)));
                                     }
                                   },

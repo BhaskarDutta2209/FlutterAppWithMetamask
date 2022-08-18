@@ -127,6 +127,7 @@ class _HomeWidgetState extends State<HomeWidget> {
                                                 MaterialPageRoute(
                                                     builder: (_) =>
                                                         TransactionCompletionPage(
+                                                          isCryptoTransfer: false,
                                                             txHash: txHash)));
                                           }
                                         },

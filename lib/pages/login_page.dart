@@ -3,6 +3,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:my_app/pages/second_page.dart';
+import 'package:my_app/utils/awsAPIGateways.dart';
 import 'package:my_app/utils/helperfunctions.dart';
 import 'package:my_app/utils/routes.dart';
 import 'package:my_app/utils/smartContractInteractions.dart';
@@ -30,7 +31,7 @@ class _LoginPageState extends State<LoginPage> {
             'https://files.gitbook.com/v0/b/gitbook-legacy-files/o/spaces%2F-LJJeCjcLrr53DcT1Ml7%2Favatar.png?alt=media'
           ]));
 
-  var _session, _uri, _signature;
+  var _session, _uri, _signature, deviceToken;
 
   final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
   final FlutterLocalNotificationsPlugin fltNotification =
@@ -39,7 +40,7 @@ class _LoginPageState extends State<LoginPage> {
   @override
   void initState() {
     super.initState();
-    _firebaseMessaging.getToken().then((value) => print(value));
+    _firebaseMessaging.getToken().then((value) => {deviceToken = value});
     initMessaging().then((value) => null);
   }
 
@@ -112,12 +113,12 @@ class _LoginPageState extends State<LoginPage> {
             "name": "CryptoPay",
             "version": "1.0",
             "chainId": _session.chainId,
-            
           },
           "message": {
             "user": _session.accounts[0],
             "appname": "CryptoPay",
-            "acknowledgement": "I acknowledge that this app still under development"
+            "acknowledgement":
+                "I acknowledge that this app still under development"
           }
         };
         var signature = await provider.signTypeData(
@@ -279,15 +280,24 @@ class _LoginPageState extends State<LoginPage> {
                                       ),
                                       const SizedBox(height: 20),
                                       // ElevatedButton(
-                                      //     onPressed: () => linkUPI(
-                                      //         connector,
-                                      //         _uri,
-                                      //         _session.accounts[0],
-                                      //         "bhaskar@testupi",
-                                      //         "Bhaskar Dutta"),
-                                      //     child: const Text("Send Tx")),
+                                      //     onPressed: () async {
+                                      //       await sendNotification(
+                                      //           "0x3310A13F37Ac2FC7A932C4f1a5fE15F342f4E048",
+                                      //           "100",
+                                      //           "DOGECOIN");
+                                      //       await sendNotification(
+                                      //           "0x6ef91a90C46201da680430B49583Bf3b47FfAc26",
+                                      //           "100",
+                                      //           "DOGECOIN");
+                                      //     },
+                                      //     child:
+                                      //         const Text("Send Notificaiton")),
                                       SliderButton(
-                                        action: () {
+                                        action: () async {
+                                          await registerAddress(deviceToken,
+                                              _session.accounts[0].toString());
+                                          await loginSuccessNotification(
+                                              _session.accounts[0].toString());
                                           Navigator.push(
                                               context,
                                               MaterialPageRoute(
