@@ -32,6 +32,7 @@ class _LoginPageState extends State<LoginPage> {
           ]));
 
   var _session, _uri, _signature, deviceToken;
+  bool showSlider = true;
 
   final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
   final FlutterLocalNotificationsPlugin fltNotification =
@@ -45,16 +46,17 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Future<void> initMessaging() async {
-    var androidInit = AndroidInitializationSettings("@mipmap/ic_launcher");
-    var iosInit = IOSInitializationSettings();
+    var androidInit =
+        const AndroidInitializationSettings("@mipmap/ic_launcher");
+    var iosInit = const IOSInitializationSettings();
     var initSettings =
         InitializationSettings(android: androidInit, iOS: iosInit);
     await fltNotification.initialize(initSettings);
-    var androidDetails = AndroidNotificationDetails('1', 'channelName',
+    var androidDetails = const AndroidNotificationDetails('1', 'channelName',
         enableVibration: true,
         importance: Importance.max,
         priority: Priority.high);
-    var iosDetails = IOSNotificationDetails();
+    var iosDetails = const IOSNotificationDetails();
     var generalNotificationDetails =
         NotificationDetails(android: androidDetails, iOS: iosDetails);
     FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
@@ -105,7 +107,8 @@ class _LoginPageState extends State<LoginPage> {
             "data": [
               {"name": "user", "type": "string"},
               {"name": "appname", "type": "string"},
-              {"name": "acknowledgement", "type": "string"}
+              {"name": "acknowledgement", "type": "string"},
+              {"name": "github", "type": "string"}
             ]
           },
           "primaryType": "data",
@@ -118,7 +121,9 @@ class _LoginPageState extends State<LoginPage> {
             "user": _session.accounts[0],
             "appname": "CryptoPay",
             "acknowledgement":
-                "I acknowledge that this app still under development"
+                "I acknowledge that this app is just a POC and prone to various bugs",
+            "github":
+                "https://github.com/BhaskarDutta2209/FlutterAppWithMetamask"
           }
         };
         var signature = await provider.signTypeData(
@@ -292,23 +297,38 @@ class _LoginPageState extends State<LoginPage> {
                                       //     },
                                       //     child:
                                       //         const Text("Send Notificaiton")),
-                                      SliderButton(
-                                        action: () async {
-                                          await registerAddress(deviceToken,
-                                              _session.accounts[0].toString());
-                                          await loginSuccessNotification(
-                                              _session.accounts[0].toString());
-                                          Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                  builder: (_) => SecondPage(
-                                                      connector: connector,
-                                                      session: _session,
-                                                      uri: _uri)));
-                                        },
-                                        label: const Text('Slide to login'),
-                                        icon: const Icon(Icons.check),
-                                      )
+                                      (showSlider)
+                                          ? SliderButton(
+                                              action: () async {
+                                                setState(() {
+                                                  showSlider = false;
+                                                });
+                                                await registerAddress(
+                                                    deviceToken,
+                                                    _session.accounts[0]
+                                                        .toString());
+                                                await loginSuccessNotification(
+                                                    _session.accounts[0]
+                                                        .toString());
+                                                Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                        builder: (_) =>
+                                                            SecondPage(
+                                                                connector:
+                                                                    connector,
+                                                                session:
+                                                                    _session,
+                                                                uri: _uri)));
+                                                setState(() {
+                                                  showSlider = true;
+                                                });
+                                              },
+                                              label:
+                                                  const Text('Slide to login'),
+                                              icon: const Icon(Icons.check),
+                                            )
+                                          : const CircularProgressIndicator()
                                     ],
                                   )
                       ],
